@@ -1,0 +1,39 @@
+version: '3.9'
+
+services:
+  data_collection:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        DOCKER_GID: "${DOCKER_GID}"
+        USERNAME: "${USERNAME}"
+        DOCKER_UID: "${DOCKER_UID}"
+    container_name: data_collection_container
+    privileged: true
+    network_mode: "host"
+    environment:
+      - DOCKER_UID=${DOCKER_UID}
+      - DOCKER_GID=${DOCKER_GID}
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+      - USERNAME=${USERNAME}
+      - PATH=/home/${USERNAME}/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    volumes:
+      - /dev:/dev:rw
+      - ../:/app
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    runtime: nvidia
+    devices:
+      - "/dev/bus/usb:/dev/bus/usb"
+    cap_add:
+      - NET_ADMIN
+    stdin_open: true
+    tty: true

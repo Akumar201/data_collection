@@ -1,0 +1,9 @@
+# Ignore build, install, and log inside data_collection_ws
+data_collection_ws/build
+data_collection_ws/install
+data_collection_ws/log
+
+# Ignore temporary files
+.vscode/
+.DS_Store
+*.swp
