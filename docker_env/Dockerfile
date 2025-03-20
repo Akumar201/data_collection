@@ -5,9 +5,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8
 
 # Define build arguments with default values
-ARG USERNAME
-ARG UID
-ARG GID
+ARG USERNAME=defaultuser
+ARG UID=1000
+ARG GID=1000
 
 # Set environment variables
 ENV LANG=C.UTF-8 \
