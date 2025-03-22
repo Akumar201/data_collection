@@ -49,7 +49,7 @@ def generate_launch_description():
                 {'hz': 100}
             ],
             remappings=[
-                ('gello_joint_angles', 'master/left_gello')
+                ('gello_joint_angles', 'master/gello_left')
             ]
         ),
 
@@ -65,7 +65,7 @@ def generate_launch_description():
                 {'hz': 100}
             ],
             remappings=[
-                ('gello_joint_angles', 'master/right_gello')
+                ('gello_joint_angles', 'master/gello_right')
             ]
         )
     ])

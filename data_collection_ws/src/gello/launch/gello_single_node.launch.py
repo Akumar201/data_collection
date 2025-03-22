@@ -41,5 +41,8 @@ def generate_launch_description():
                 {'gello_port': left_gello_port},
                 {'hz': 100}
             ],
+            remappings=[
+                ('gello_joint_angles', 'master/gello_left')
+            ]
         ),
     ])
