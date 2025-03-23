@@ -55,7 +55,12 @@ def record_rosbag():
         '/camera/right_wrist_cam/extrinsics/depth_to_infra1'
     ]
 
-    # Check available topics
+    #TOTODO CHECK IF TOPICS THRESHOLDS SHOULDNT FALL BELOW A CERTAIN VALUE
+    # IF DATA STOPS BEING COLLECTED, CHECK IF THE TOPICS ARE STILL BEING PUBLISHED TO COLLECT DATA THEN THROW AN ERROR
+    #CLASS - MODULARITY
+    #META DATA FILE FOR OVERALL
+    # ( ROOBOT ID, WHICH ROBOT IS BEING USED),TASK NAME, OPERATOR NAME,DURATION OF EPISODE, DATA_COMPRESSED, 
+    # REPLAY RECORD THE SAVE DATA (MCAP), USE_DEPTH_IMAGE: TRUE
     valid_topics = [topic for topic in all_topics if check_topic_exists(topic)]
 
     if not valid_topics or len(valid_topics) < len(all_topics):
