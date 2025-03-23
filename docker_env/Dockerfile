@@ -36,6 +36,10 @@ RUN sudo apt-get update && sudo apt-get install -y apt-utils \
     curl \
     wget \
     python3-colcon-common-extensions \
+    sudo apt install ros-humble-ros2-control \
+    sudo apt install ros-humble-ros2-controllers \
+    sudo apt install ros-humble-controller-manager \
+    iproute2 \
     && sudo rm -rf /var/lib/apt/lists/*
 
 # Add RealSense repository and key

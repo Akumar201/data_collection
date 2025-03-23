@@ -5,8 +5,8 @@ from typing import Optional, Tuple
 import numpy as np
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Float64MultiArray
-
+# from std_msgs.msg import Float64MultiArray
+from sensor_msgs.msg import JointState
 from agents.gello_agent import GelloAgent
 
 
@@ -38,15 +38,20 @@ class GelloController(Node):
                 raise ValueError("No Gello port found.")
 
         self.agent = GelloAgent(port=gello_port)
-        self.publisher_ = self.create_publisher(Float64MultiArray, 'gello_joint_angles', 10)
+        self.publisher_ = self.create_publisher(JointState, 'gello_joint_angles', 10)
         self.timer = self.create_timer(1.0 / hz, self.publish_joint_angles)
 
     def publish_joint_angles(self):
-        joint_angles = self.agent.get_joint_angle()
-        msg = Float64MultiArray()
-        msg.data = joint_angles.tolist()
+        joint_angles = self.agent.get_joint_angle()  # Should return a 7-element NumPy array
+        msg = JointState()
+        msg.header.stamp = self.get_clock().now().to_msg()
+        msg.name = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6', 'gripper']
+        msg.position = joint_angles.tolist()
+        msg.velocity = [0.0] * 7  
+        msg.effort = [0.0] * 7    
+
         self.publisher_.publish(msg)
-        self.get_logger().info(f'Published: {msg.data}',  throttle_duration_sec=5.0)
+        # self.get_logger().info(f'Published: {msg}',  throttle_duration_sec=5.0)
 
 def main():
     rclpy.init()

@@ -36,7 +36,6 @@ def generate_launch_description():
     right_gello_port = serials['right_gello']
 
     return LaunchDescription([
-
         # Left arm node
         Node(
             package='gello',
@@ -52,7 +51,6 @@ def generate_launch_description():
                 ('gello_joint_angles', 'master/gello_left')
             ]
         ),
-
         # Right arm node
         Node(
             package='gello',
