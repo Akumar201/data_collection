@@ -8,9 +8,6 @@ import math
 import time
 import sys
 
-def clip(value, min_val, max_val):
-    return max(min(value, max_val), min_val)
-
 class PiperController(Node):
     def __init__(self):
         super().__init__('piper_joint_subscriber')
@@ -23,7 +20,7 @@ class PiperController(Node):
         self.factor = 57324.840764  # ~1000 * 180 / π
 
         self.goto_home()
-        self.piper.MotionCtrl_2(0x01, 0x01, 100, 0xAD)
+        self.piper.MotionCtrl_2(0x01, 0x01, 100, 0x00)
         self.subscription = self.create_subscription(
             JointState,
             'joint_ctrl_single',
@@ -31,7 +28,7 @@ class PiperController(Node):
             10
         )
 
-        self.get_logger().info("Piper Joint Subscriber initialized and ready.")
+        self.get_logger().info("✅ Piper Joint Subscriber initialized and ready.")
 
     def joint_callback(self, joint_data):
         joint_positions = {}
@@ -115,8 +112,6 @@ class PiperController(Node):
         rclpy.shutdown()
         sys.exit(1)
         
-
-
 def enable_piper(piper:C_PiperInterface_V2):
     '''
     使能机械臂并检测使能状态,尝试5s,如果使能超时则退出程序
@@ -152,6 +147,8 @@ def enable_piper(piper:C_PiperInterface_V2):
         print("程序自动使能超时,退出程序")
         exit(0)
 
+def clip(value, min_val, max_val):
+    return max(min(value, max_val), min_val)
 
 def main(args=None):
     rclpy.init(args=args)
