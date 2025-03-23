@@ -1,27 +1,79 @@
-This module is for controlling gello to control robotic arm, it is independent of robotic arm. 
-The topic on which the joint angles are published are master/gello_left  and master/gello_right
+# Gello ROS 2 Controller
 
-To launch the node you can simply use the following command ros2 launch gello gello_single_node.launch.py for launching single gello to control single arm , right now the default is left arm. You can use ros2 launch gello gello_double_node.launch.py to launch bimanual arm. 
+This module provides an interface for **Gello**, a 6-DoF joystick-style input device for controlling a robotic arm.  
+It is **independent of the robotic arm itself** — it only publishes `JointState` messages, which can be consumed by any compatible robot.
+
+---
+
+## 📡 Topics
+
+The joint angles are published on the following ROS 2 topics:
+
+- `master/gello_left`
+- `master/gello_right`
+
+---
+
+## 🚀 Launching Gello Controller
+
+### 🦾 Single Arm (Default: Left)
+
+To launch a **single Gello device** (for controlling one arm), run:
+
+```bash
+ros2 launch gello gello_single_node.launch.py
+
+This defaults to the left arm. You can change the port or remap topics in the launch file if needed.
 
 
-When installing new gello you need to run the gello_get_offset.py to get the offset and edit the gello_agent.py accordingly. 
+🤖 Bimanual Mode (Left & Right Arms)
 
+To launch two Gello devices simultaneously for bimanual control, run:
 
-We have created a simple script to automatically detect the joint offset:
+ros2 launch gello gello_double_node.launch.py
 
-    set GELLO into a known configuration, where you know what the corresponding joint angles should be. For example, we set out GELLO in this configuration, where we know the desired ground truth joints. (0, 0, 0, 0, 0, 0)
+This will start two Gello controllers — one for each arm.
+⚙️ Calibrating a New Gello Device
 
-    run
+When installing a new Gello, you must run a one-time calibration script to determine joint encoder offsets.
+
+We’ve included a simple script that helps compute these offsets automatically.
+🧭 Steps
+
+    Set your Gello into a known configuration (e.g. all joints at 0, 0, 0, 0, 0, 0 radians)
+
+    Run the calibration script:
 
 python scripts/gello_get_offset.py \
-    --start-joints 0 0 0 0 0 0 \ # in radians
-    --joint-signs 1 1 -1 1 1 1 \
+    --start-joints 0 0 0 0 0 0 \  # in radians
+    --joint-signs 1 1 1 1 1 1 \
     --port /dev/serial/by-id/usb-FTDI_USB__-__Serial_Converter_FT7WBG6
-# replace values with your own
 
-    Use the known starting joints for start-joints.
-    Use the joint-signs for your own robot (see below).
-    Use your serial port for port. You can find the port id of your U2D2 Dynamixel device by running ls /dev/serial/by-id and looking for the path that starts with usb-FTDI_USB__-__Serial_Converter (on Ubuntu). On Mac, look in /dev/ and the device that starts with cu.usbserial
+🔧 Arguments
 
-joint-signs
-AgileX 1 1 -1 1 1 1
+    --start-joints: Your known Gello joint angles (in radians)
+
+    --joint-signs: Direction multipliers for each joint (see below)
+
+    --port: Serial port of your Gello device
+
+To find your serial port:
+
+    On Ubuntu:
+
+    ls /dev/serial/by-id/
+
+    Look for something like:
+    usb-FTDI_USB__-__Serial_Converter_*
+
+    On macOS:
+    Look in /dev/ for something like:
+    cu.usbserial*
+
+🔁 Joint Signs
+
+These values correct the direction of motion for each joint.
+
+AgileX configuration:
+
+1 1 -1 1 1 1
