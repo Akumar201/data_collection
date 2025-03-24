@@ -13,8 +13,7 @@ ARG GID=1000
 ENV LANG=C.UTF-8 \
     LC_ALL=C.UTF-8 \
     TZ=America/Los_Angeles \
-    ROS_DOMAIN_ID=200 \
-    DEBIAN_FRONTEND=noninteractive
+    ROS_DOMAIN_ID=200
 
 # Create app directory
 RUN mkdir -p /app
@@ -24,39 +23,35 @@ RUN groupadd --gid ${GID} ${USERNAME} && \
     useradd --uid ${UID} --gid ${GID} -m ${USERNAME} && \
     echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# Set user for subsequent instructions
-USER ${USERNAME}
-ENV PATH=/home/${USERNAME}/.local/bin:$PATH
-ENV PATH=/usr/local/cuda/bin:$PATH
-# Install essential tools and RealSense SDK dependencies
-RUN sudo apt-get update && sudo apt-get install -y apt-utils \
+# Install essential tools and ROS2 Packages (Fixed the command)
+RUN apt-get update && apt-get install -y apt-utils \
     python3-pip \
     build-essential \
     nano \
     curl \
     wget \
     python3-colcon-common-extensions \
-    sudo apt install ros-humble-ros2-control \
-    sudo apt install ros-humble-ros2-controllers \
-    sudo apt install ros-humble-controller-manager \
+    ros-humble-ros2-control \
+    ros-humble-ros2-controllers \
+    ros-humble-controller-manager \
     iproute2 \
-    && sudo rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
 
 # Add RealSense repository and key
-RUN sudo mkdir -p /etc/apt/keyrings && \
-    curl -sSf https://librealsense.intel.com/Debian/librealsense.pgp | sudo tee /etc/apt/keyrings/librealsense.pgp > /dev/null && \
+RUN mkdir -p /etc/apt/keyrings && \
+    curl -sSf https://librealsense.intel.com/Debian/librealsense.pgp | tee /etc/apt/keyrings/librealsense.pgp > /dev/null && \
     echo "deb [signed-by=/etc/apt/keyrings/librealsense.pgp] https://librealsense.intel.com/Debian/apt-repo $(lsb_release -cs) main" | \
-    sudo tee /etc/apt/sources.list.d/librealsense.list
+    tee /etc/apt/sources.list.d/librealsense.list
 
 # Install RealSense SDK 2.0
-RUN sudo apt-get update && sudo apt-get install -y \
+RUN apt-get update && apt-get install -y \
     librealsense2-utils \
     librealsense2-dev \
     librealsense2-dbg \
     ros-humble-realsense2-camera \
     ros-humble-tf-transformations \
     ros-humble-rqt-image-view \
-    && sudo rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements file
 COPY requirements.txt /app/requirements.txt
@@ -69,11 +64,10 @@ SHELL ["/bin/bash", "-c"]
 RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 
 COPY ros2_entrypoint.sh /ros2_entrypoint.sh
-RUN sudo chmod +x /ros2_entrypoint.sh
+RUN chmod +x /ros2_entrypoint.sh
 
 WORKDIR /app
 
 # Setting up ros2 environment
 ENTRYPOINT ["/ros2_entrypoint.sh"]
-# Default command (can be overridden)
 CMD [ "bash" ]
