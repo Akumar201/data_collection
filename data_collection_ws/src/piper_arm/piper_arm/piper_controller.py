@@ -20,7 +20,7 @@ class PiperController(Node):
         self.factor = 57324.840764  # ~1000 * 180 / π
 
         self.goto_home()
-        self.piper.MotionCtrl_2(0x01, 0x01, 100, 0x00)
+        self.piper.MotionCtrl_2(0x01, 0x01, 100, 0xAD)
         self.subscription = self.create_subscription(
             JointState,
             'joint_ctrl_single',

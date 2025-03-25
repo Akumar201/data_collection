@@ -24,7 +24,7 @@ class GelloController(Node):
 
         # Declare and get parameters from ROS 2 launch system
         self.declare_parameter('gello_port', '')
-        self.declare_parameter('hz', 100)
+        self.declare_parameter('hz', 200)
         gello_port = self.get_parameter('gello_port').get_parameter_value().string_value
         hz = self.get_parameter('hz').get_parameter_value().integer_value
 
