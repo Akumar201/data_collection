@@ -39,7 +39,8 @@ def generate_launch_description():
             output='screen',
             parameters=[
                 {'gello_port': left_gello_port},
-                {'hz': 200}
+                {'hz': 200},
+                {'dev_mode': False}
             ],
             remappings=[
                 ('gello_joint_angles', 'master/gello_left')
