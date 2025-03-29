@@ -5,9 +5,8 @@ import numpy as np
 
 import rclpy
 from rclpy.node import Node
-from sensor_msgs.msg import JointState
 from agents.gello_agent import GelloAgent
-
+from custom_interfaces.msg import JointPosition7
 
 class GelloController(Node):
     def __init__(self):
@@ -34,12 +33,9 @@ class GelloController(Node):
             'joint6': [-2.0922, 2.0922]
         }
         self.joint_names = list(self.joint_limits_piper.keys()) + ['joint7']
-
-        self.msg = JointState()
-        self.msg.name = self.joint_names
-        self.msg.velocity = [0.0] * 7
-        self.msg.effort = [0.0] * 7
-        self.msg.position = [0.0] * 7
+        
+        self.msg = JointPosition7()
+        self.msg.positions = [0] * 7
 
         # Precompute min and max limit arrays for efficient clipping
         self.min_limits = np.array([self.joint_limits_piper[j][0] for j in self.joint_names[:6]])
@@ -47,7 +43,7 @@ class GelloController(Node):
 
         self.connect_gello(self.gello_port)
 
-        self.publisher_ = self.create_publisher(JointState, 'gello_joint_angles', 10)
+        self.publisher_ = self.create_publisher(JointPosition7, 'gello_joint_angles', 10)
         self.timer = self.create_timer(1.0 / self.hz, self.publish_joint_angles)
 
 
@@ -76,9 +72,9 @@ class GelloController(Node):
 
         scaled_joined_anlges = self.clip_and_scale(joint_angles)
         
-        self.msg.header.stamp = self.get_clock().now().to_msg()
-        self.msg.position = scaled_joined_anlges.tolist()
+        self.msg.positions = scaled_joined_anlges  # Must be 7 int32 values
         self.publisher_.publish(self.msg)
+        # self.get_logger().info(f"Publishing: {self.msg.positions}")
         
     def clip_and_scale(self, joint_angles: np.ndarray) -> np.ndarray:
         # Clip first 6 joints
@@ -95,7 +91,7 @@ class GelloController(Node):
 
         # Convert result to float64 to satisfy ROS 2 type constraints
         result = np.append(scaled, gripper_scaled)
-        return result.astype(np.float64)
+        return result.astype(np.int32)
 
 def main():
     rclpy.init()
