@@ -35,7 +35,7 @@ class GelloController(Node):
         self.joint_names = list(self.joint_limits_piper.keys()) + ['joint7']
         
         self.msg = JointPosition7()
-        self.msg.positions = [0] * 7
+        self.msg.pos = [0] * 7
 
         # Precompute min and max limit arrays for efficient clipping
         self.min_limits = np.array([self.joint_limits_piper[j][0] for j in self.joint_names[:6]])
@@ -70,11 +70,12 @@ class GelloController(Node):
             self.get_logger().error(f"Failed to read joint angles: {e}")
             return
 
-        scaled_joined_anlges = self.clip_and_scale(joint_angles)
-        
-        self.msg.positions = scaled_joined_anlges  # Must be 7 int32 values
+        scaled_joined_angles = self.clip_and_scale(joint_angles)
+        converted_values = [int(x) for x in scaled_joined_angles]
+        for idx, val in enumerate(converted_values):
+            self.get_logger().info(f"Joint {idx+1} type: {type(val)}")
+        self.msg.pos = converted_values
         self.publisher_.publish(self.msg)
-        # self.get_logger().info(f"Publishing: {self.msg.positions}")
         
     def clip_and_scale(self, joint_angles: np.ndarray) -> np.ndarray:
         # Clip first 6 joints
@@ -83,7 +84,8 @@ class GelloController(Node):
 
         if self.dev_mode:
             # In dev mode, return raw values (just clipped)
-            return np.append(clipped, gripper)
+            result = np.append(clipped, gripper)
+            return result.astype(np.int32)
 
         # Scale arm joints and gripper
         scaled = np.round(clipped * self.scale_factor_piper).astype(np.int32)

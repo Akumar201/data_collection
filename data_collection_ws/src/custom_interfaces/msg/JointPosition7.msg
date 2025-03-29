@@ -1,1 +1,1 @@
-int32[7] positions
+int32[7] pos
