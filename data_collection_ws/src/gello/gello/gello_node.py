@@ -71,10 +71,7 @@ class GelloController(Node):
             return
 
         scaled_joined_angles = self.clip_and_scale(joint_angles)
-        converted_values = [int(x) for x in scaled_joined_angles]
-        for idx, val in enumerate(converted_values):
-            self.get_logger().info(f"Joint {idx+1} type: {type(val)}")
-        self.msg.pos = converted_values
+        self.msg.pos = scaled_joined_angles
         self.publisher_.publish(self.msg)
         
     def clip_and_scale(self, joint_angles: np.ndarray) -> np.ndarray:
