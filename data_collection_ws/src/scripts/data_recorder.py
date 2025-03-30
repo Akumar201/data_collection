@@ -39,7 +39,7 @@ def record_rosbag():
 
     # Define the topics to record
     all_topics = [
-        # '/right_wrist_cam/color/image_rect_raw',
+        # '/right_wrist_cam/color/image_rect_raw',a
         # '/right_wrist_cam/aligned_depth_to_color/image_raw',
         # '/right_wrist_cam/aligned_depth_to_color/camera_info',
         # '/high_cam/color/image_rect_raw',
