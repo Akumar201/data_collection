@@ -8,6 +8,12 @@ ARG USERNAME=defaultuser
 ARG UID=1000
 ARG GID=1000
 
+# Export arguments as environment variables
+ENV USERNAME=${USERNAME}
+ENV UID=${UID}
+ENV GID=${GID}
+
+
 # Set environment variables
 ENV LANG=C.UTF-8 \
     LC_ALL=C.UTF-8 \
