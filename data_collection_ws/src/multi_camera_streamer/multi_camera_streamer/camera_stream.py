@@ -10,6 +10,7 @@ class CameraStreamer(Node):
     def __init__(self):
         super().__init__('camera0streamer')
         print("YOLOOOOOOOOOOOOOOOOOOOOO")
+        print("HJFODJFO")
         self.bridge = CvBridge()
         # Publisher for the color stream
         self.publisher = self.create_publisher(Image, 'camera/live_video_stream', 10)
