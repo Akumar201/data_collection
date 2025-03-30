@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<profiles>
+  <transport_descriptors>
+    <transport_descriptor>
+      <transport_id>udp</transport_id>
+      <builtin>false</builtin>
+      <user_transports>
+        <transport>
+          <transport_type>UDPv4</transport_type>
+          <interfaceWhiteList>
+            <!-- Replace with the correct IP address of your Wi-Fi interface -->
+            <string>100.110.155.27</string>
+          </interfaceWhiteList>
+        </transport>
+      </user_transports>
+    </transport_descriptor>
+  </transport_descriptors>
+  <participant_profile>
+    <rtps>
+      <useBuiltinTransports>false</useBuiltinTransports>
+      <userTransports>
+        <transport_id>udp</transport_id>
+      </userTransports>
+      <builtin>
+        <metatrafficUnicastLocatorList>
+          <locator>
+            <udpv4>100.110.155.27:7412</udpv4>
+          </locator>
+        </metatrafficUnicastLocatorList>
+        <initialPeersList>
+          <locator>
+            <udpv4>100.110.155.27:7412</udpv4>
+          </locator>
+        </initialPeersList>
+      </builtin>
+    </rtps>
+  </participant_profile>
+</profiles>
