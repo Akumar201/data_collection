@@ -1,26 +1,19 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <profiles>
   <transport_descriptors>
     <transport_descriptor>
-      <transport_id>udp</transport_id>
-      <builtin>false</builtin>
-      <user_transports>
-        <transport>
-          <transport_type>UDPv4</transport_type>
-          <interfaceWhiteList>
-            <!-- Replace with the correct IP address of your Wi-Fi interface -->
-            <string>100.110.155.27</string>
-          </interfaceWhiteList>
-        </transport>
-      </user_transports>
+      <transport_id>UDPv4</transport_id>
+      <type>UDPv4</type>
+      <sendBufferSize>9216</sendBufferSize>
+      <receiveBufferSize>9216</receiveBufferSize>
+      <maxMessageSize>9216</maxMessageSize>
+      <interfaceWhiteList>
+        <address>100.110.155.27</address>
+      </interfaceWhiteList>
     </transport_descriptor>
   </transport_descriptors>
-  <participant_profile>
+  <participant profile_name="default_participant_profile" is_default_profile="true">
     <rtps>
-      <useBuiltinTransports>false</useBuiltinTransports>
-      <userTransports>
-        <transport_id>udp</transport_id>
-      </userTransports>
       <builtin>
         <metatrafficUnicastLocatorList>
           <locator>
@@ -33,6 +26,9 @@
           </locator>
         </initialPeersList>
       </builtin>
+      <userTransports>
+        <transport_id>UDPv4</transport_id>
+      </userTransports>
     </rtps>
-  </participant_profile>
+  </participant>
 </profiles>
