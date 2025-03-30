@@ -26,7 +26,7 @@ class PiperController(Node):
         self.gripper_val_mutiple = 1
         self.gripper_exist = True
         self.factor = 57324.840764  # ~1000 * 180 / π
-        self.piper.MotionCtrl_2(0x01, 0x00, 100, 0x00)
+        self.piper.MotionCtrl_2(0x01, 0x01, 100, 0xAD)
 
         self.goto_home()
         self.subscription = self.create_subscription(
@@ -60,58 +60,53 @@ class PiperController(Node):
         # self.get_logger().info_throttle(5.0, f"Updated joints | Pos: {joint_data.position}")
 
     def goto_home(self):
-        """
-        Commands the arm to go to its home position and starts a timer
-        to periodically check if the arm has reached home.
-        """
-        # Command the arm to go home
-        self.piper.JointCtrl(0, 0, 0, 0, 0, 0)
+
+        # self.piper.MotionCtrl_2(0x01, 0x01, 50, 0x00)
+        self.piper.JointCtrl(
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        )
+
         if self.gripper_exist:
-            self.piper.GripperCtrl(0, 1000, 0x01, 0)
-        
-        # Set up parameters for the home check
-        self._home_start_time = time.time()
-        self._home_timeout_sec = 10
-        self._home_tolerance = 5000  # e.g., 5000 corresponds to 5 degrees
-        self._home_joint_names = ['joint_1', 'joint_2', 'joint_3',
-                                'joint_4', 'joint_5', 'joint_6']
-        
-        # Create a timer that checks the home position every 0.1 seconds
-        self._home_timer = self.create_timer(0.1, self._check_home_position)
-        
+            self.piper.GripperCtrl(0,1000,0x01, 0)
+        start_time = time.time()    
+        timeout_sec = 10 
+        tolerance = 5000 # 5000 is 5 degrees 
 
-    def _check_home_position(self):
-        """
-        Timer callback that checks if the arm has reached its home position.
-        Cancels the timer and raises an exception if a timeout occurs.
-        """
-        elapsed = time.time() - self._home_start_time
-        joint_feedback = self.piper.GetArmJointMsgs()
-        joints = joint_feedback.joint_state
-        # Extract positions from joints using the predefined joint names
-        positions = [getattr(joints, name) for name in self._home_joint_names]
+        joint_names = [
+            'joint_1', 'joint_2', 'joint_3',
+            'joint_4', 'joint_5', 'joint_6'
+        ]
 
-        # Check if the arm is within tolerance for all joints
-        if all(abs(pos) <= self._home_tolerance for pos in positions):
-            self.get_logger().info("✅ Arm reached home position.")
-            self._home_timer.cancel()
-            return
+        while (elapsed := time.time() - start_time) < timeout_sec:
+            joint_feedback = self.piper.GetArmJointMsgs()
+            joints = joint_feedback.joint_state
 
-        # If timeout is reached, log a warning, disable the arm, and raise an error
-        if elapsed >= self._home_timeout_sec:
-            self.get_logger().warn("⚠️ Timed out waiting for arm to reach home position.")
-            error_message = CustomErrorMessages.home_timeout_error(self._home_timeout_sec)
-            self.get_logger().warn(error_message)
-            self._home_timer.cancel()
-            self.enable_piper(enable=False)
-            # Raise an exception to trigger graceful shutdown in main()
-            raise Exception(error_message)
-        else:
-            # Log current status (using throttled logging)
+            # Dynamically extract joint positions using getattr
+            positions = [getattr(joints, name) for name in joint_names]
+
+            if all(abs(pos) <= tolerance for pos in positions):
+                self.get_logger().info("✅ Arm reached home position.")
+                return
+
             self.get_logger().info(
                 f"⏱️ Waiting for home position... Elapsed: {elapsed:.1f}s, Positions: {positions}",
-                throttle_duration_sec=5
+                throttle_duration_sec = 5
             )
+
+            time.sleep(0.1)  # Slight delay to prevent tight polling loop
+
+        self.get_logger().warn("⚠️ Timed out waiting for arm to reach home position.")
+        self.enable_piper(enable=False)
+        # If we reach here, the arm did not reach home within timeout.
+        error_message = CustomErrorMessages.home_timeout_error(timeout_sec)
+        self.get_logger().warn(error_message)
+        # Raise an exception so that the main loop can handle the shutdown gracefully.
+        raise Exception(error_message)
         
     def enable_piper(self, enable: bool):
         '''
