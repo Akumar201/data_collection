@@ -1,0 +1,19 @@
+{
+    "listen": {
+      "endpoints": ["tcp/0.0.0.0:7447", "udp/0.0.0.0:7448"]
+    },
+    "routing": {
+      "peer": {
+        "mode": "linkstate"
+      }
+    },
+    "scouting": {
+      "multicast": {
+        "enabled": true,
+        "address": "224.0.0.224:7446",
+        "interface": "auto",
+        "listen": true
+      }
+    }
+  }
+  

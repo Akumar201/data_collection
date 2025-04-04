@@ -2,3 +2,4 @@ piper_sdk
 dynamixel-sdk
 python-can
 scipy
+eclipse-zenoh
