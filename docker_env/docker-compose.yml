@@ -13,6 +13,7 @@ services:
     privileged: true
     network_mode: "host"
     environment:
+      - ROUTER_MODE=true
       - DOCKER_UID=${DOCKER_UID}
       - DOCKER_GID=${DOCKER_GID}
       - DISPLAY=${DISPLAY}
@@ -50,6 +51,7 @@ services:
     privileged: true
     network_mode: "host"
     environment:
+      - ROUTER_MODE=true
       - DOCKER_UID=${DOCKER_UID}
       - DOCKER_GID=${DOCKER_GID}
       - DISPLAY=${DISPLAY}

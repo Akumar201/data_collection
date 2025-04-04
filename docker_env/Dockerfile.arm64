@@ -74,12 +74,12 @@ RUN pip3 install --no-cache-dir -r /app/requirements_arm64.txt
 SHELL ["/bin/bash", "-c"]
 RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 
-COPY ros2_entrypoint.sh /ros2_entrypoint.sh
-RUN sudo chmod +x /ros2_entrypoint.sh
+COPY entrypoint.sh /entrypoint.sh
+RUN sudo chmod +x /entrypoint.sh
 
 WORKDIR /app
 
 # Setting up ros2 environment
-ENTRYPOINT ["/ros2_entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
 # Default command (can be overridden)
 CMD [ "bash" ]

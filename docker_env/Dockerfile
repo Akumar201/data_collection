@@ -16,18 +16,19 @@ ENV LANG=C.UTF-8 \
     ROS_DOMAIN_ID=200 \
     DEBIAN_FRONTEND=noninteractive
 
-# Create app directory
-RUN mkdir -p /app
-
 # Create group and user, and give the user sudo privileges without a password
 RUN groupadd --gid ${GID} ${USERNAME} && \
     useradd --uid ${UID} --gid ${GID} -m ${USERNAME} && \
     echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
+# Create app directory and adjust ownership for the non-root user
+RUN mkdir -p /app && chown -R ${USERNAME}:${USERNAME} /app
+
 # Set user for subsequent instructions
 USER ${USERNAME}
 ENV PATH=/home/${USERNAME}/.local/bin:$PATH
 ENV PATH=/usr/local/cuda/bin:$PATH
+
 # Install essential tools and RealSense SDK dependencies
 RUN sudo apt-get update && sudo apt-get install -y apt-utils \
     python3-pip \
@@ -43,6 +44,23 @@ RUN sudo apt-get update && sudo apt-get install -y apt-utils \
     ethtool \
     can-utils \
     && sudo rm -rf /var/lib/apt/lists/*
+
+# Install Rust non-interactively (-y flag confirms installation)
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+# Add Cargo's bin directory to the PATH
+ENV PATH="/home/${USERNAME}/.cargo/bin:${PATH}"
+
+USER root
+
+# Clone the Zenoh repository and build it in release mode
+RUN git clone https://github.com/eclipse-zenoh/zenoh.git /app/zenoh && \
+    cd /app/zenoh && \
+    cargo build --release && \
+    install -m 755 target/release/zenohd /usr/local/bin/zenohd && \
+    rm -rf /app/zenoh
+
+USER ${USERNAME}
 
 # Add RealSense repository and key
 RUN sudo mkdir -p /etc/apt/keyrings && \
@@ -70,12 +88,12 @@ RUN pip3 install --no-cache-dir -r /app/requirements.txt
 SHELL ["/bin/bash", "-c"]
 RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 
-COPY ros2_entrypoint.sh /ros2_entrypoint.sh
-RUN sudo chmod +x /ros2_entrypoint.sh
+COPY entrypoint.sh /entrypoint.sh
+RUN sudo chmod +x /entrypoint.sh
 
 WORKDIR /app
 
 # Setting up ros2 environment
-ENTRYPOINT ["/ros2_entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
 # Default command (can be overridden)
 CMD [ "bash" ]
