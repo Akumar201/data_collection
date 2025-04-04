@@ -9,18 +9,14 @@ if [ -f "/app/install/setup.bash" ]; then
     source "/app/install/setup.bash"
 fi
 
-
 if [ "$ROUTER_MODE" = "true" ]; then
     echo "Starting Zenoh router in router mode..."
-    exec /usr/local/bin/zenohd -c /app/config/router_config.json
-else
-    echo "Router mode disabled. Starting application..."
+    /usr/local/bin/zenohd -c /app/config/router_config.json &
 fi
 
-# Source additional workspaces if they exist
-# if [ -f "/app/data_collection_ws/install/setup.bash" ]; then
-#     source "/app/data_collection_ws/install/setup.bash"
-# fi
-
-# Execute the command passed to the docker run
-exec "$@"
+# If a command was provided, execute it; otherwise, run a default command
+if [ "$#" -eq 0 ]; then
+    exec tail -f /dev/null
+else
+    exec "$@"
+fi
