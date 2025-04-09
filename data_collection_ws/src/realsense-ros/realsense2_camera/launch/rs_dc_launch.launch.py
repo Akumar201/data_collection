@@ -17,8 +17,8 @@ def load_serial_numbers():
 
     cameras = config.get('station', {}).get('cameras', {})
     serial_numbers = {
-        'left_wrist_cam': cameras.get('left_wrist', {}).get('serial_no', ''),
-        'right_wrist_cam': cameras.get('right_wrist', {}).get('serial_no', ''),
+        # 'left_wrist_cam': cameras.get('left_wrist', {}).get('serial_no', ''),
+        # 'right_wrist_cam': cameras.get('right_wrist', {}).get('serial_no', ''),
         'high_cam': cameras.get('high', {}).get('serial_no', '')
     }
     
