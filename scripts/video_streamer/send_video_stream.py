@@ -10,9 +10,9 @@ Gst.init(None)
 pipeline_str = (
     'appsrc name=source is-live=true block=true format=TIME do-timestamp=true ! '
     'videoconvert ! '
-    'x264enc tune=zerolatency bitrate=1000 speed-preset=superfast key-int-max=10 ! '
+    'x264enc tune=zerolatency bitrate=3000 speed-preset=superfast key-int-max=10 ! '
     'rtph264pay config-interval=1 pt=96 ! '
-    'udpsink host=192.168.1.126 port=5000'
+    'udpsink host=192.168.50.27 port=5000'
 )
 pipeline = Gst.parse_launch(pipeline_str)
 appsrc = pipeline.get_by_name('source')
