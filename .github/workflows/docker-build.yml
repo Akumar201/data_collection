@@ -27,8 +27,6 @@ jobs:
           DOCKER_GID: 1001
           CI: true  # 👈 Flag to indicate the build is running in CI
         run: |
-          # Change the working directory to match the script's expected path
-          cd ./docker_env
           ./scripts/build_data_collection.sh ./docker_env/docker-compose.yml  # Run the script
 
       - name: ✅ Verify image exists
