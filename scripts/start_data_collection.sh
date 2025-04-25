@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# Full build-run lifecycle with optional cleanup
 # Proceed with building and starting the container
 export USERNAME=${USERNAME:-"defaultuser"}
 export DOCKER_UID=${DOCKER_UID:-1000}
@@ -74,6 +74,5 @@ else
     echo "Skipping rebuild. Restarting existing containers..."
     restart_docker_containers
 fi
-
 # Attach to the running container using its container name as defined in docker-compose.yml
 docker exec -it data_collection_container /bin/bash

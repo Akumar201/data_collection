@@ -1,11 +1,9 @@
 #!/bin/bash
-# build_data_collection.sh
-# This script builds the "data_collection" service using a docker-compose file located in ../docker_env/
+# start_data_collection.sh
+# This script starts the "data_collection" service using a docker-compose file located in ../docker_env/
 
 # Define the path to the docker-compose file
 COMPOSE_FILE="../docker_env/docker-compose.yml"
-
-
 
 # Check if the docker-compose file exists
 if [ ! -f "$COMPOSE_FILE" ]; then
@@ -19,12 +17,12 @@ if ! command -v docker-compose &> /dev/null; then
     exit 1
 fi
 
-echo "Building the data_collection service using docker-compose from $COMPOSE_FILE..."
-docker-compose -f "$COMPOSE_FILE" build data_collection
+echo "Starting the data_collection service using docker-compose from $COMPOSE_FILE..."
+docker-compose -f "$COMPOSE_FILE" up -d
 
 if [ $? -eq 0 ]; then
-    echo "Successfully built the data_collection service."
+    echo "Successfully started the data_collection service."
 else
-    echo "Error: Failed to build the data_collection service."
+    echo "Error: Failed to start the data_collection service."
     exit 1
 fi

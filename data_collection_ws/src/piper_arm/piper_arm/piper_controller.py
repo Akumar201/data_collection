@@ -26,7 +26,7 @@ class PiperController(Node):
         self.gripper_val_mutiple = 1
         self.gripper_exist = True
         self.factor = 57324.840764  # ~1000 * 180 / π
-        self.piper.MotionCtrl_2(0x01, 0x01, 100, 0xAD)
+        self.piper.MotionCtrl_2(0x01, 0x01, 40, 0xAD)
 
         self.goto_home()
         self.subscription = self.create_subscription(
@@ -55,7 +55,7 @@ class PiperController(Node):
         # Gripper control
         if self.gripper_exist:
             if len(joint_data.pos) >= 7:
-                self.piper.GripperCtrl(abs(position[6]), 1000, 0x01, 0)
+                self.piper.GripperCtrl(abs(position[6]), 5000, 0x01, 0)
 
         # self.get_logger().info_throttle(5.0, f"Updated joints | Pos: {joint_data.position}")
 
@@ -72,10 +72,10 @@ class PiperController(Node):
         )
 
         if self.gripper_exist:
-            self.piper.GripperCtrl(0,1000,0x01, 0)
+            self.piper.GripperCtrl(0,5000,0x01, 0)
         start_time = time.time()    
         timeout_sec = 10 
-        tolerance = 5000 # 5000 is 5 degrees 
+        tolerance = 5500 # 5000 is 5 degrees 
 
         joint_names = [
             'joint_1', 'joint_2', 'joint_3',
@@ -133,11 +133,11 @@ class PiperController(Node):
             if enable:
                 enable_flag = all(enable_list)
                 self.piper.EnableArm(7)
-                self.piper.GripperCtrl(99200, 1000, 0x01, 0)
+                self.piper.GripperCtrl(99200, 5000, 0x01, 0)
             else:
                 enable_flag = any(enable_list)
                 self.piper.DisableArm(7)
-                self.piper.GripperCtrl(99200, 1000, 0x02, 0)
+                self.piper.GripperCtrl(99200, 5000, 0x02, 0)
 
             print(f"Enable status: {enable_flag}")
 

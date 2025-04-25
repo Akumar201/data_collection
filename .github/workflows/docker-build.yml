@@ -1,0 +1,33 @@
+name: Build Docker Container
+
+on:
+  push:
+    branches: [ main ]    # Or your default branch
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v3
+
+      - name: 🐳 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🧪 Make script executable
+        run: chmod +x ../../scripts/build_data_collection.sh  # Update this with your actual script path
+
+      - name: 🏗️ Build container
+        env:
+          USERNAME: ci_user
+          DOCKER_UID: 1001
+          DOCKER_GID: 1001
+          CI: true  # 👈 Flag to indicate the build is running in CI
+        run: |
+          ./scripts/build_data_collection.sh  # Update with the actual script path
+
+      - name: ✅ Verify image exists
+        run: docker images | grep data_collection  # Modify based on the image name

@@ -2,28 +2,30 @@ version: '3.9'
 
 services:
   data_collection:
+    container_name: data_collection_container
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        DOCKER_GID: "${DOCKER_GID}"
-        USERNAME: "${USERNAME}"
-        DOCKER_UID: "${DOCKER_UID}"
-    container_name: data_collection_container
+        DOCKER_GID: ${DOCKER_GID}
+        DOCKER_UID: ${DOCKER_UID}
+        USERNAME: ${USERNAME}
     privileged: true
     network_mode: "host"
     environment:
       - ROUTER_MODE=true
-      - DOCKER_UID=${DOCKER_UID}
-      - DOCKER_GID=${DOCKER_GID}
       - DISPLAY=${DISPLAY}
       - QT_X11_NO_MITSHM=1
       - USERNAME=${USERNAME}
+      - DOCKER_UID=${DOCKER_UID}
+      - DOCKER_GID=${DOCKER_GID}
       - PATH=/home/${USERNAME}/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
     volumes:
       - /dev:/dev:rw
       - ../:/app
       - /tmp/.X11-unix:/tmp/.X11-unix
+    devices:
+      - "/dev/bus/usb:/dev/bus/usb"
     deploy:
       resources:
         reservations:
@@ -31,39 +33,6 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
-    runtime: nvidia
-    devices:
-      - "/dev/bus/usb:/dev/bus/usb"
-    cap_add:
-      - NET_ADMIN
-    stdin_open: true
-    tty: true
-
-  data_collection_arm64:
-    build:
-      context: .
-      dockerfile: Dockerfile.arm64
-      args:
-        DOCKER_GID: "${DOCKER_GID}"
-        USERNAME: "${USERNAME}"
-        DOCKER_UID: "${DOCKER_UID}"
-    container_name: data_collection_container_arm
-    privileged: true
-    network_mode: "host"
-    environment:
-      - ROUTER_MODE=true
-      - DOCKER_UID=${DOCKER_UID}
-      - DOCKER_GID=${DOCKER_GID}
-      - DISPLAY=${DISPLAY}
-      - QT_X11_NO_MITSHM=1
-      - USERNAME=${USERNAME}
-      - PATH=/home/${USERNAME}/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-    volumes:
-      - /dev:/dev:rw
-      - ../:/app
-      - /tmp/.X11-unix:/tmp/.X11-unix
-    devices:
-      - "/dev/bus/usb:/dev/bus/usb"
     cap_add:
       - NET_ADMIN
     stdin_open: true
