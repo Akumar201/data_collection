@@ -18,7 +18,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: 🧪 Make script executable
-        run: chmod +x ../../scripts/build_data_collection.sh  # Update this with your actual script path
+        run: chmod +x ./scripts/build_data_collection.sh  # Update this with your actual script path
 
       - name: 🏗️ Build container
         env:
