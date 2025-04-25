@@ -29,7 +29,7 @@ jobs:
         run: |
           # Change the working directory to match the script's expected path
           cd ./docker_env
-          ./scripts/build_data_collection.sh  # Run the script
+          ./scripts/build_data_collection.sh ./docker_env/docker-compose.yml  # Run the script
 
       - name: ✅ Verify image exists
         run: docker images | grep data_collection  # Modify based on the image name

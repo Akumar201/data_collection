@@ -1,11 +1,15 @@
 #!/bin/bash
 # build_data_collection.sh
-# This script builds the "data_collection" service using a docker-compose file located in ../docker_env/
+# This script builds the "data_collection" service using a docker-compose file.
+# The path to the docker-compose file can be passed as an argument. If no argument is provided, the default path will be used.
 
-# Define the path to the docker-compose file
-COMPOSE_FILE="../docker_env/docker-compose.yml"
+# Default path to the docker-compose file
+DEFAULT_COMPOSE_FILE="../docker_env/docker-compose.yml"
 
-# Check if the docker-compose file exists
+# Check if a path is passed as an argument, otherwise use the default
+COMPOSE_FILE="${1:-$DEFAULT_COMPOSE_FILE}"
+
+# Check if the docker-compose file exists at the provided path
 if [ ! -f "$COMPOSE_FILE" ]; then
     echo "Error: $COMPOSE_FILE not found."
     exit 1
