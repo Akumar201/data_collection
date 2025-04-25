@@ -3,3 +3,4 @@ dynamixel-sdk
 python-can
 scipy
 eclipse-zenoh
+yq

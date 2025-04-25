@@ -13,6 +13,59 @@ echo "GID: ${DOCKER_GID}"
 echo "Enabling X11 access for local Docker containers..."
 xhost +local:docker
 
+# Define the path to the config file (replace with actual path)
+CONFIG_FILE="../config/config.local.yaml"
+
+# Extract left and right gello serial numbers from YAML file using yq
+LEFT_GELLO_SERIAL_NO=$(yq e '.station.gello.left_gello_serial_no' "$CONFIG_FILE")
+RIGHT_GELLO_SERIAL_NO=$(yq e '.station.gello.right_gello_serial_no' "$CONFIG_FILE")
+
+# Check if the variables are set correctly
+if [ -z "$LEFT_GELLO_SERIAL_NO" ] || [ -z "$RIGHT_GELLO_SERIAL_NO" ]; then
+    echo "Error: Could not find left or right gello serial numbers in the config file."
+    exit 1
+fi
+
+# Print the extracted serial numbers (optional)
+echo "Left Gello Serial No: $LEFT_GELLO_SERIAL_NO"
+echo "Right Gello Serial No: $RIGHT_GELLO_SERIAL_NO"
+
+# You can now use these serial numbers for further processing in your script
+# For example, exporting them as environment variables for later use:
+export LEFT_GELLO_SERIAL_NO
+export RIGHT_GELLO_SERIAL_NO
+
+# Make sure the serial devices exist before changing permissions
+if [ -e "$LEFT_GELLO_SERIAL_NO" ]; then
+    echo "Changing permissions for left gello serial device..."
+    sudo chmod 666 "$LEFT_GELLO_SERIAL_NO"  # Give read/write permissions to all users
+else
+    echo "Error: Left Gello device does not exist at $LEFT_GELLO_SERIAL_NO."
+fi
+
+if [ -e "$RIGHT_GELLO_SERIAL_NO" ]; then
+    echo "Changing permissions for right gello serial device..."
+    sudo chmod 666 "$RIGHT_GELLO_SERIAL_NO"  # Give read/write permissions to all users
+else
+    echo "Error: Right Gello device does not exist at $RIGHT_GELLO_SERIAL_NO."
+fi
+
+
+# Make sure the script has executable permission 
+chmod +x /can_activate.sh
+
+# Run the can_activate.sh script to activate can port
+echo "Running can_activate.sh..."
+./can_activate.sh
+
+# Check if the script ran successfully
+if [ $? -eq 0 ]; then
+    echo "can_activate.sh ran successfully."
+else
+    echo "Error: can_activate.sh failed to run."
+    exit 1
+fi
+
 # Get the absolute path to the project root (one level up from the scripts directory)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
