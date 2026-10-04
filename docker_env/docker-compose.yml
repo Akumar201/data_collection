@@ -4,28 +4,18 @@ services:
     container_name: data_collection_container
     build:
       context: .
-      dockerfile: Dockerfile
       args:
-        GID: ${DOCKER_GID:-1000}
-        UID: ${DOCKER_UID:-1000}
         USERNAME: ${USERNAME:-defaultuser}
+        UID: ${DOCKER_UID:-1000}
+        GID: ${DOCKER_GID:-1000}
     privileged: true
-    network_mode: "host"
+    network_mode: host
     environment:
-      - ROUTER_MODE=true
       - DISPLAY=${DISPLAY}
       - QT_X11_NO_MITSHM=1
-      - USERNAME=${USERNAME:-defaultuser}
-      - DOCKER_UID=${DOCKER_UID:-1000}
-      - DOCKER_GID=${DOCKER_GID:-1000}
-      - PATH=/home/${USERNAME:-defaultuser}/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
     volumes:
-      - /dev:/dev:rw
+      - /dev:/dev
       - ../:/app
       - /tmp/.X11-unix:/tmp/.X11-unix
-    devices:
-      - "/dev/bus/usb:/dev/bus/usb"
-    cap_add:
-      - NET_ADMIN
     stdin_open: true
     tty: true

@@ -2,29 +2,22 @@ name: Build Docker Container
 
 on:
   push:
-    branches: [ main ]    # Or your default branch
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: 📥 Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: 🧪 Make scripts executable
-        run: chmod +x ./scripts/*.sh
-
-      - name: 🏗️ Build container
+      - name: Build container
         env:
           USERNAME: ci_user
           DOCKER_UID: 1001
           DOCKER_GID: 1001
-          CI: true  # 👈 Flag to indicate the build is running in CI
-        run: |
-          ./scripts/build_data_collection.sh
+        run: ./scripts/build_data_collection.sh
 
-      - name: ✅ Verify image exists
+      - name: Verify image exists
         run: docker image inspect data_collection:latest --format '{{.Architecture}}'
