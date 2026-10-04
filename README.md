@@ -2,11 +2,16 @@
 
 This project contains code for **data collection**.
 ## 🐳  Running the Docker
-Go to the `scripts/` directory and run:
+Works on both x86 (amd64) and ARM (arm64, e.g. Orange Pi) hosts with Docker Compose v2 or v1.
+The scripts can be run from any directory:
 
 ```
-./script
+./scripts/up_data_collection.sh       # (optionally rebuild), start and attach to the container
+./scripts/build_data_collection.sh    # only build the image
+./scripts/start_data_collection.sh    # only start the container in the background
 ```
+
+The NVIDIA GPU override (`docker_env/docker-compose.nvidia.yml`) is added automatically on hosts with the NVIDIA runtime.
 
 ## 📁 Project Structure
 
@@ -17,7 +22,7 @@ This folder contains configuration files, including [`config.yaml`](https://gith
 - When cloning this repository, **DO NOT edit `config.yaml` directly**.
 - Instead, create a **`config.local.yaml`** file:
   ```sh
-  cp config/config.yaml config.local.yaml
+  cp config/config.yaml config/config.local.yaml
 Edit config.local.yaml to match your station-specific settings, such as:
 - Camera serial numbers
 - Station name

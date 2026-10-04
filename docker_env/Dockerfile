@@ -1,4 +1,5 @@
-FROM osrf/ros:humble-desktop
+# Multi-arch base (amd64 + arm64); osrf/ros:humble-desktop is amd64-only
+FROM ros:humble-perception
 
 # Set non-interactive mode and locale
 ENV DEBIAN_FRONTEND=noninteractive
@@ -64,8 +65,8 @@ USER ${USERNAME}
 
 # Add RealSense repository and key
 RUN sudo mkdir -p /etc/apt/keyrings && \
-    curl -sSf https://librealsense.intel.com/Debian/librealsense.pgp | sudo tee /etc/apt/keyrings/librealsense.pgp > /dev/null && \
-    echo "deb [signed-by=/etc/apt/keyrings/librealsense.pgp] https://librealsense.intel.com/Debian/apt-repo $(lsb_release -cs) main" | \
+    curl -sSf https://librealsense.realsenseai.com/Debian/librealsenseai.asc | gpg --dearmor | sudo tee /etc/apt/keyrings/librealsenseai.gpg > /dev/null && \
+    echo "deb [signed-by=/etc/apt/keyrings/librealsenseai.gpg] https://librealsense.realsenseai.com/Debian/apt-repo $(lsb_release -cs) main" | \
     sudo tee /etc/apt/sources.list.d/librealsense.list
 
 # Install RealSense SDK 2.0

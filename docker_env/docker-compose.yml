@@ -1,38 +1,30 @@
-version: '3.9'
-
 services:
   data_collection:
+    image: data_collection:latest
     container_name: data_collection_container
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        DOCKER_GID: ${DOCKER_GID}
-        DOCKER_UID: ${DOCKER_UID}
-        USERNAME: ${USERNAME}
+        GID: ${DOCKER_GID:-1000}
+        UID: ${DOCKER_UID:-1000}
+        USERNAME: ${USERNAME:-defaultuser}
     privileged: true
     network_mode: "host"
     environment:
       - ROUTER_MODE=true
       - DISPLAY=${DISPLAY}
       - QT_X11_NO_MITSHM=1
-      - USERNAME=${USERNAME}
-      - DOCKER_UID=${DOCKER_UID}
-      - DOCKER_GID=${DOCKER_GID}
-      - PATH=/home/${USERNAME}/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      - USERNAME=${USERNAME:-defaultuser}
+      - DOCKER_UID=${DOCKER_UID:-1000}
+      - DOCKER_GID=${DOCKER_GID:-1000}
+      - PATH=/home/${USERNAME:-defaultuser}/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
     volumes:
       - /dev:/dev:rw
       - ../:/app
       - /tmp/.X11-unix:/tmp/.X11-unix
     devices:
       - "/dev/bus/usb:/dev/bus/usb"
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
     cap_add:
       - NET_ADMIN
     stdin_open: true

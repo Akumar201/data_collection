@@ -1,28 +1,34 @@
 #!/bin/bash
-# start_data_collection.sh
-# This script starts the "data_collection" service using a docker-compose file located in ../docker_env/
+# up_data_collection.sh
+# Full build-run lifecycle: optionally rebuild the image, start the container and attach to it.
 
-# Define the path to the docker-compose file
-COMPOSE_FILE="../docker_env/docker-compose.yml"
+source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 
-# Check if the docker-compose file exists
-if [ ! -f "$COMPOSE_FILE" ]; then
-    echo "Error: $COMPOSE_FILE not found."
-    exit 1
+echo "USERNAME: ${USERNAME}"
+echo "UID: ${DOCKER_UID}"
+echo "GID: ${DOCKER_GID}"
+echo "ARCH: $(uname -m)"
+
+# Enable access to X server for local Docker containers (skipped on headless hosts).
+if command -v xhost &>/dev/null && [ -n "$DISPLAY" ]; then
+    echo "Enabling X11 access for local Docker containers..."
+    xhost +local:docker
 fi
 
-# Check if docker-compose is installed
-if ! command -v docker-compose &> /dev/null; then
-    echo "Error: docker-compose is not installed. Please install it and try again."
-    exit 1
-fi
+# Prompt user to rebuild the image from scratch
+read -p "Do you want to remove the existing data_collection container/image and rebuild from scratch? (y/n): " rebuild_confirm
+if [ "$rebuild_confirm" = "y" ]; then
+    echo "Removing existing data_collection container and image..."
+    compose down
+    docker rmi data_collection:latest -f
 
-echo "Starting the data_collection service using docker-compose from $COMPOSE_FILE..."
-docker-compose -f "$COMPOSE_FILE" up -d
-
-if [ $? -eq 0 ]; then
-    echo "Successfully started the data_collection service."
+    compose build data_collection || { echo "Error: Failed to build the data_collection service."; exit 1; }
 else
-    echo "Error: Failed to start the data_collection service."
-    exit 1
+    echo "Skipping rebuild. Starting existing container (builds the image if it does not exist)..."
 fi
+
+compose up -d || { echo "Error: Failed to start the data_collection service."; exit 1; }
+echo "✅ data_collection container is running."
+
+# Attach to the running container using its container name as defined in docker-compose.yml
+docker exec -it data_collection_container /bin/bash

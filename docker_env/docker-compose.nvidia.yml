@@ -1,0 +1,11 @@
+# Optional GPU override for NVIDIA hosts:
+#   docker compose -f docker-compose.yml -f docker-compose.nvidia.yml up -d
+services:
+  data_collection:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
